@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
+using Mnemosyne.Application.Features.Memory.SearchMemory;
 using Mnemosyne.Domain.Interfaces;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<MnemosyneDbContext>(options =>
 
 builder.Services.AddScoped<IMemoryRepository, MemoryRepository>();
 builder.Services.AddScoped<CreateMemoryHandler>();
+builder.Services.AddScoped<SearchMemoryHandler>();
 
 builder.Services.AddOpenApi();
 
