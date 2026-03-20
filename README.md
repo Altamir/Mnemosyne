@@ -17,7 +17,6 @@ docker-compose up -d
 
 Isso inicia:
 - **PostgreSQL** (porta 5432) com extensão pgvector
-- **Redis** (porta 6379) - reservado para futuras funcionalidades de cache
 
 ### 2. Executar a API
 
@@ -26,7 +25,7 @@ cd src/Mnemosyne.Api
 dotnet run
 ```
 
-A API estará disponível em `http://localhost:5000`
+A API estará disponível em `http://localhost:5226` (http) ou `https://localhost:7187` (https)
 
 ### 3. Executar testes
 

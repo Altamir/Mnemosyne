@@ -20,7 +20,7 @@
 
 ### Infraestrutura
 
-- Docker Compose com PostgreSQL (pgvector) e Redis
+- Docker Compose com PostgreSQL (pgvector)
 - Entity Framework Core com migrations
 - Testcontainers para testes de integração
 - xUnit com Moq e AutoFixture para testes
@@ -31,7 +31,7 @@
 |------------|------------|
 | Runtime | .NET 10 |
 | API | ASP.NET Core Minimal APIs |
-| Database | PostgreSQL 16 + pgvector 0.8.2 |
+| Database | PostgreSQL 18 + pgvector 0.8.2-pg18-trixie |
 | ORM | Entity Framework Core 10 |
 | Testing | xUnit, Moq, AutoFixture, Testcontainers |
 | Architecture | Clean Architecture + CQRS |
@@ -40,7 +40,6 @@
 
 1. **Sem autenticação** - API exposta sem autenticação (reservado para fase 2)
 2. **Sem rate limiting** - endpoints sem proteção contra sobrecarga
-3. **Sem cache** - Redis configurado mas não utilizado
 4. **Embedding service mockado** - busca usa similaridade vetorial básica sem serviço de embedding dedicado
 5. **Testes de integração requerem Docker** - não funcionam em ambientes sem container runtime
 

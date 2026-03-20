@@ -11,6 +11,8 @@ namespace Mnemosyne.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("CREATE EXTENSION IF NOT EXISTS vector;");
+
             migrationBuilder.EnsureSchema(
                 name: "mnemosyne");
 

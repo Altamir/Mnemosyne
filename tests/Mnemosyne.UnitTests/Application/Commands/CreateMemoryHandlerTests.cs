@@ -1,5 +1,4 @@
 using AutoFixture;
-using AutoFixture.DataAnnotations;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
 using Mnemosyne.Domain.Entities;
 using Mnemosyne.Domain.Enums;
@@ -28,8 +27,10 @@ public class CreateMemoryHandlerTests
     public async Task ValidContent_Executed_ReturnsCreatedMemory()
     {
         // Arrange
-        var command = new CreateMemoryCommand("Test memory content", MemoryType.Note);
-        var createdMemory = MemoryEntity.Create(command.Content, command.Type);
+        var content = _fixture.Create<string>();
+        var memoryType = _fixture.Create<MemoryType>();
+        var command = new CreateMemoryCommand(content, memoryType);
+        var createdMemory = MemoryEntity.Create(content, memoryType);
         _repositoryMock
             .Setup(x => x.AddAsync(It.IsAny<MemoryEntity>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdMemory);
@@ -39,8 +40,8 @@ public class CreateMemoryHandlerTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(command.Content, result.Content);
-        Assert.Equal(command.Type, result.Type);
+        Assert.Equal(content, result.Content);
+        Assert.Equal(memoryType, result.Type);
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<MemoryEntity>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -77,8 +78,9 @@ public class CreateMemoryHandlerTests
     public async Task AllMemoryTypes_Executed_ReturnsMemoryWithCorrectType(MemoryType memoryType)
     {
         // Arrange
-        var command = new CreateMemoryCommand("Test content", memoryType);
-        var createdMemory = MemoryEntity.Create(command.Content, command.Type);
+        var content = _fixture.Create<string>();
+        var command = new CreateMemoryCommand(content, memoryType);
+        var createdMemory = MemoryEntity.Create(content, memoryType);
         _repositoryMock
             .Setup(x => x.AddAsync(It.IsAny<MemoryEntity>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdMemory);
