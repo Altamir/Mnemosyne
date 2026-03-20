@@ -12,3 +12,9 @@
 
 #### Open Questions
 - Need to verify if .slnx extension causes any issues with tooling
+
+### Memory Domain Model (Task 02)
+- Implemented MemoryEntity and MemoryType using TDD approach
+- Created minimal domain model with guard clause for empty content
+- Used factory pattern (Create method) for object creation
+- Null-forgiving operator (`= null!`) used for private setter initialization
