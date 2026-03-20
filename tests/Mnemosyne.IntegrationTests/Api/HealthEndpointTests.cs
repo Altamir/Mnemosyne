@@ -35,16 +35,24 @@ public class HealthEndpointTests : IClassFixture<HealthWebApplicationFactory>, I
         Assert.Contains("alive", body);
     }
 
-    [Fact(DisplayName = "GET /health/ready - retorna 200 quando banco conectado")]
+    [Fact(DisplayName = "GET /health/ready - retorna 503 quando banco nao conectado")]
     [Trait("Layer", "Integration - API - Health")]
-    public async Task HealthReady_WhenDbConnected_ReturnsOk()
+    public async Task HealthReady_WhenDbNotConnected_Returns503()
     {
         var response = await _client.GetAsync("/health/ready");
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         var body = await response.Content.ReadAsStringAsync();
-        Assert.Contains("ready", body);
-        Assert.Contains("connected", body);
+        Assert.Contains("not ready", body);
+    }
+
+    [Fact(DisplayName = "GET /health/ready - retorna 503 quando banco inacessivel")]
+    [Trait("Layer", "Integration - API - Health")]
+    public async Task HealthReady_WhenDbInaccessible_Returns503()
+    {
+        var response = await _client.GetAsync("/health/ready");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
 }
 

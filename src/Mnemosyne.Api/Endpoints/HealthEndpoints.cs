@@ -7,16 +7,16 @@ public static class HealthEndpoints
 {
     public static void MapHealthEndpoints(this WebApplication app)
     {
-        app.MapGet("/health/live", () => Results.Ok(new { status = "alive" }))
+        app.MapGet("/health/live", (CancellationToken ct) => Results.Ok(new { status = "alive" }))
             .WithName("HealthLive")
             .WithTags("Health")
             .WithSummary("Liveness probe - returns 200 if service is running");
 
-        app.MapGet("/health/ready", async (MnemosyneDbContext context) =>
+        app.MapGet("/health/ready", async (MnemosyneDbContext context, CancellationToken ct) =>
         {
             try
             {
-                var canConnect = await context.Database.CanConnectAsync();
+                var canConnect = await context.Database.CanConnectAsync(ct);
                 if (canConnect)
                 {
                     return Results.Ok(new { status = "ready", database = "connected" });

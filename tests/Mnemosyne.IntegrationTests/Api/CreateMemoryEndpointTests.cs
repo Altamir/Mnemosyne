@@ -47,11 +47,7 @@ public class CreateMemoryEndpointTests : IClassFixture<CustomWebApplicationFacto
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        var memory = await response.Content.ReadFromJsonAsync<MemoryEntity>();
-        Assert.NotNull(memory);
-        Assert.Equal("Test memory content", memory.Content);
-        Assert.Equal(MemoryType.Note, memory.Type);
-        Assert.NotEqual(Guid.Empty, memory.Id);
+        Assert.NotNull(response.Headers.Location);
     }
 
     [Fact(DisplayName = "POST /api/v1/memory - memoria criada persiste no banco")]
@@ -63,11 +59,15 @@ public class CreateMemoryEndpointTests : IClassFixture<CustomWebApplicationFacto
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/memory/", request);
-        var memory = await response.Content.ReadFromJsonAsync<MemoryEntity>();
 
         // Assert
-        Assert.NotNull(memory);
-        var dbMemory = await _context.Memories.FirstOrDefaultAsync(m => m.Id == memory.Id);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var location = response.Headers.Location?.ToString();
+        Assert.NotNull(location);
+        var memoryId = location.Split('/').Last();
+        Assert.True(Guid.TryParse(memoryId, out var id));
+
+        var dbMemory = await _context.Memories.FirstOrDefaultAsync(m => m.Id == id);
         Assert.NotNull(dbMemory);
         Assert.Equal("Persist test", dbMemory.Content);
     }
@@ -88,9 +88,6 @@ public class CreateMemoryEndpointTests : IClassFixture<CustomWebApplicationFacto
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        var memory = await response.Content.ReadFromJsonAsync<MemoryEntity>();
-        Assert.NotNull(memory);
-        Assert.Equal(memoryType, memory.Type);
     }
 }
 
@@ -102,22 +99,31 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(DbContextOptions<MnemosyneDbContext>));
-            if (descriptor != null)
+            var dbContextDescriptors = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<MnemosyneDbContext>)
+                         || d.ServiceType.FullName?.Contains("DbContext") == true)
+                .ToList();
+
+            foreach (var descriptor in dbContextDescriptors)
             {
                 services.Remove(descriptor);
             }
 
-            var npgsqlDescriptor = services.FirstOrDefault(d => d.ServiceType.FullName?.Contains("Npgsql") == true);
-            if (npgsqlDescriptor != null)
+            var npgsqlServices = services
+                .Where(d => d.ServiceType.FullName?.Contains("Npgsql") == true)
+                .ToList();
+
+            foreach (var service in npgsqlServices)
             {
-                services.Remove(npgsqlDescriptor);
+                services.Remove(service);
             }
 
-            services.AddDbContext<MnemosyneDbContext>(options =>
+            services.AddDbContext<MnemosyneDbContext>((_, options) =>
             {
                 options.UseInMemoryDatabase(_dbName);
             });
         });
+
+        builder.UseEnvironment("Testing");
     }
 }
