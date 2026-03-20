@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Mnemosyne.Application.Features.Auth.ValidateApiKey;
+using Mnemosyne.Application.Features.Compress.CompressContext;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
 using Mnemosyne.Application.Features.Memory.SearchMemory;
 using Mnemosyne.Application.Features.Project.CreateProject;
 using Mnemosyne.Domain.Interfaces;
+using Mnemosyne.Domain.Services;
+using Mnemosyne.Infrastructure.Compression;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
 using Mnemosyne.Api.Endpoints;
@@ -24,6 +27,9 @@ builder.Services.AddScoped<SearchMemoryHandler>();
 builder.Services.AddScoped<ValidateApiKeyHandler>();
 builder.Services.AddScoped<CreateProjectHandler>();
 
+builder.Services.AddSingleton<ICompressionStrategy, CodeStructureCompressionStrategy>();
+builder.Services.AddScoped<CompressContextHandler>();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -40,6 +46,7 @@ app.UseApiKeyValidation();
 
 app.MapMemoryEndpoints();
 app.MapProjectEndpoints();
+app.MapCompressEndpoints();
 
 app.MapHealthEndpoints();
 

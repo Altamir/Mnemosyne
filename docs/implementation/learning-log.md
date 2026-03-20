@@ -4,6 +4,18 @@
 
 ### 2026-03-20
 
+#### Task 05 - Compressao de Contexto
+- Strategy pattern via DI com IEnumerable<ICompressionStrategy> — sem factory class
+- Handler resolve estrategia por StrategyName comparado com enum.ToString()
+- CodeStructureCompressionStrategy usa [GeneratedRegex] para performance e AOT compatibility
+- Compressao remove: corpos de metodo, comentarios (// /// /* */), linhas em branco excessivas
+- Compressao preserva: declaracoes de classe/interface/enum/record, assinaturas de metodo, auto-properties, usings, namespaces
+- CompressionResult record retorna metadata: compressed content, original/compressed length, ratio, strategy name
+- targetRatio validado entre 0 (exclusivo) e 1 (exclusivo), default 0.7
+- Estrategias registradas como Singleton (stateless), handler como Scoped
+- 100% line coverage e 98% branch coverage nos arquivos de compressao
+- 21 testes unitarios (9 handler + 12 strategy) cobrindo todos os cenarios
+
 #### Task 04 - OpenAI Embedding Service
 - Implementado IEmbeddingService interface em Domain.Interfaces
 - OpenAiEmbeddingService usa EmbeddingClient do OpenAI SDK 2.9.1
