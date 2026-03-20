@@ -1,4 +1,5 @@
 using Mnemosyne.Domain.Enums;
+using Pgvector;
 
 namespace Mnemosyne.Domain.Entities;
 
@@ -7,7 +8,9 @@ public class MemoryEntity
     public Guid Id { get; private set; }
     public string Content { get; private set; } = null!;
     public MemoryType Type { get; private set; }
+    public Vector? Embedding { get; private set; }
     public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; private set; }
 
     private MemoryEntity() { }
 
@@ -23,7 +26,8 @@ public class MemoryEntity
             Id = Guid.NewGuid(),
             Content = content,
             Type = type,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
     }
 }
