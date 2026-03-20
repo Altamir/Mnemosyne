@@ -7,7 +7,7 @@ public class MemoryEntity
     public Guid Id { get; private set; }
     public string Content { get; private set; } = null!;
     public MemoryType Type { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+    public DateTime CreatedAt { get; init; }
 
     private MemoryEntity() { }
 
