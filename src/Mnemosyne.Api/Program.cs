@@ -12,12 +12,15 @@ using Mnemosyne.Application.Features.Project.ListProjects;
 using Mnemosyne.Application.Features.Project.UpdateProject;
 using Mnemosyne.Domain.Interfaces;
 using Mnemosyne.Domain.Services;
+using Mnemosyne.Infrastructure.AI;
 using Mnemosyne.Infrastructure.Compression;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
 using Mnemosyne.Infrastructure.Services;
 using Mnemosyne.Api.Endpoints;
 using Mnemosyne.Api.Middleware;
+using OpenAI;
+using OpenAI.Embeddings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +47,19 @@ builder.Services.AddScoped<GetIndexStatusHandler>();
 
 builder.Services.AddSingleton<ICompressionStrategy, CodeStructureCompressionStrategy>();
 builder.Services.AddScoped<CompressContextHandler>();
+
+// OpenAI Embedding Service configuration
+var openAiApiKey = builder.Configuration["OpenAI:ApiKey"] 
+    ?? throw new InvalidOperationException("OpenAI:ApiKey configuration is required.");
+var embeddingModel = builder.Configuration["OpenAI:EmbeddingModel"] ?? "text-embedding-3-small";
+
+builder.Services.AddSingleton(new OpenAIClient(openAiApiKey));
+builder.Services.AddSingleton<EmbeddingClient>(sp => 
+{
+    var client = sp.GetRequiredService<OpenAIClient>();
+    return client.GetEmbeddingClient(embeddingModel);
+});
+builder.Services.AddSingleton<IEmbeddingService, OpenAiEmbeddingService>();
 
 builder.Services.AddHostedService<ProjectIndexerService>();
 

@@ -23,6 +23,13 @@
 - Metodo SetEmbedding adicionado a MemoryEntity para definir embedding pos-criacao
 - Modelo text-embedding-3-large usado por padrao
 - Interface IEmbeddingService permite mock em testes unitarios
+- DI registration no Program.cs: OpenAIClient, EmbeddingClient, IEmbeddingService
+- Configuracao OpenAI:ApiKey e OpenAI:EmbeddingModel no appsettings.json
+- Retry policy com exponential backoff (MaxRetries=3, InitialDelay=1000ms)
+- Tratamento de erros transientes: 429 rate limit, 5xx server errors, network errors
+- Testes de integracao verificam DI registration e resolucao de servicos
+- 3 testes unitarios para validacao de input (empty, whitespace, null)
+- 5 testes de integracao para DI registration e validacao
 
 #### Task 03 - Indexacao Assincrona de Projeto
 - Implementado ProjectIndexJobEntity para rastrear Jobs de indexacao
