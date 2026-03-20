@@ -4,6 +4,14 @@
 
 ### 2026-03-20
 
+#### Task 04 - OpenAI Embedding Service
+- Implementado IEmbeddingService interface em Domain.Interfaces
+- OpenAiEmbeddingService usa EmbeddingClient do OpenAI SDK 2.9.1
+- CreateMemoryHandler agora injeta IEmbeddingService e gera embedding ao criar memoria
+- Metodo SetEmbedding adicionado a MemoryEntity para definir embedding pos-criacao
+- Modelo text-embedding-3-large usado por padrao
+- Interface IEmbeddingService permite mock em testes unitarios
+
 #### Task 03 - Indexacao Assincrona de Projeto
 - Implementado ProjectIndexJobEntity para rastrear Jobs de indexacao
 - IndexStatus enum: Pending, Processing, Completed, Failed

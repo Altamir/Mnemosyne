@@ -4,6 +4,11 @@
 
 ### 2026-03-20
 
+#### Task 04 - OpenAI Embedding Service
+- OpenAI SDK 2.9.1 tem API diferente de versoes anteriores - usa EmbeddingClient diretamente
+- IEmbeddingService movido de Application.Abstractions para Domain.Interfaces para manter consistencia com outras interfaces
+- Pgvector adicionado ao UnitTests para permitir mocks com Vector
+
 #### Task 03 - Indexacao Assincrona
 - Nenhum erro critico encontrado durante implementacao
 - Padrao de job assincrono permite extensibilidade futura para processamento real

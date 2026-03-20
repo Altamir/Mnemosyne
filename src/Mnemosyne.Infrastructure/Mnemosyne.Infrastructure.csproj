@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mnemosyne.Domain\Mnemosyne.Domain.csproj" />
+    <ProjectReference Include="..\Mnemosyne.Application\Mnemosyne.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -10,6 +11,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageReference Include="OpenAI" Version="2.9.1" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
   </ItemGroup>
 
