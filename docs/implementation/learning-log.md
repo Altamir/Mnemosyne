@@ -1,5 +1,22 @@
 # Learning Log
 
+## Fase 2 - Autenticacao e Projetos
+
+### 2026-03-20
+
+#### Task 01 - Autenticacao API Key
+- Implementado UserEntity com hash BCrypt para seguranca de API Keys
+- API Key传出 via header `X-Api-Key`
+- ValidateApiKeyHandler como Query Handler para validacao
+- ApiKeyMiddleware protege todos os endpoints exceto `/api/v1/auth/*`
+- Middleware injeta UserId no HttpContext.Items para acesso posterior
+
+#### Task 02 - CRUD de Projetos
+- ProjectEntity com isolamento logico por UserId
+- Repository pattern com IProjectRepository
+- Endpoint POST /api/v1/projects com CreateProjectHandler
+- Configuracao EF Core para Projects com indice em UserId
+
 ## Fase 1 - Foundation
 
 ### 2026-03-19
