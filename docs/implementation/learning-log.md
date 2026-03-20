@@ -56,9 +56,21 @@
 
 #### Task 02 - CRUD de Projetos
 - ProjectEntity com isolamento logico por UserId
-- Repository pattern com IProjectRepository
-- Endpoint POST /api/v1/projects com CreateProjectHandler
+- Repository pattern com IProjectRepository (AddAsync, GetByIdAsync, GetByUserIdAsync, UpdateAsync, DeleteAsync)
+- CRUD completo com 5 endpoints:
+  - POST /api/v1/projects (Create)
+  - GET /api/v1/projects?userId=... (List com [AsParameters])
+  - GET /api/v1/projects/{id} (Get by Id)
+  - PUT /api/v1/projects/{id} (Update)
+  - DELETE /api/v1/projects/{id} (Delete)
+- Metodo Update(name, description) em ProjectEntity para atualizacao controlada
+- Cada acao em feature folder separado: CreateProject, GetProject, ListProjects, UpdateProject, DeleteProject
+- Handlers validam inputs e lancam ArgumentException (400) ou KeyNotFoundException (404)
+- ListProjectsRequest usa [AsParameters] para bind de query string em Minimal API
 - Configuracao EF Core para Projects com indice em UserId
+- 13 testes unitarios + 12 testes de integracao cobrindo todos os endpoints
+- Testes de integracao verificam middleware de autenticacao (401 sem API Key)
+- Teste de Delete verifica exclusao real (GET apos DELETE retorna 404)
 
 ## Fase 1 - Foundation
 

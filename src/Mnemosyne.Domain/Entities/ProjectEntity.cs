@@ -33,4 +33,16 @@ public class ProjectEntity
             UpdatedAt = DateTime.UtcNow
         };
     }
+
+    public void Update(string name, string? description)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Name cannot be empty", nameof(name));
+        }
+
+        Name = name;
+        Description = description;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

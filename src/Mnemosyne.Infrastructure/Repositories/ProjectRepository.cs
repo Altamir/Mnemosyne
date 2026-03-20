@@ -32,4 +32,17 @@ public class ProjectRepository : IProjectRepository
             .Where(p => p.UserId == userId)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<ProjectEntity> UpdateAsync(ProjectEntity project, CancellationToken cancellationToken)
+    {
+        _context.Projects.Update(project);
+        await _context.SaveChangesAsync(cancellationToken);
+        return project;
+    }
+
+    public async Task DeleteAsync(ProjectEntity project, CancellationToken cancellationToken)
+    {
+        _context.Projects.Remove(project);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

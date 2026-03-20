@@ -18,6 +18,11 @@
 - Nenhum erro critico encontrado durante implementacao
 - Padrao de job assincrono permite extensibilidade futura para processamento real
 
+#### Task 02 - CRUD de Projetos
+- Nenhum erro critico encontrado durante implementacao do CRUD completo
+- TDD workflow seguido sem intercorrencias
+- Filtro `ClassName~` do dotnet test nao funciona com xUnit display names em pt-BR; usar `FullyQualifiedName~` como alternativa
+
 #### Issue: Testcontainers PostgreSql com WebApplicationFactory
 - **Problem:** Integration tests com ValidateApiKeyEndpointTests falhavam ao usar WebApplicationFactory<Program>
 - **Causa:** Multiplos problemas: (1) IEmbeddingService nao registrado no DI, (2) conflito dual-provider Npgsql vs InMemory, (3) coluna pgvector Vector nao suportada pelo InMemory provider, (4) handlers de Task 3 nao registrados causando falha de inferencia de parametros do Minimal API
