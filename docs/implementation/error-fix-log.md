@@ -17,6 +17,11 @@
 #### Task 03 - Indexacao Assincrona
 - Nenhum erro critico encontrado durante implementacao
 - Padrao de job assincrono permite extensibilidade futura para processamento real
+- InternalsVisibleTo necessario para acessar construtor internal do ProjectIndexerService nos testes
+  - Adicionado ao Mnemosyne.Infrastructure.csproj: `<InternalsVisibleTo Include="Mnemosyne.UnitTests" />`
+- LSP reporta erros falso-positivos para `Mnemosyne.Infrastructure.Services` namespace nos testes — projeto compila normalmente
+- ProjectIndexerService usa dual-constructor: producao (IServiceScopeFactory + ILogger) e teste (dependencias diretas)
+  - Campos _test* sao nullable e verificados em runtime para decidir entre DI scope e injecao direta
 
 #### Task 02 - CRUD de Projetos
 - Nenhum erro critico encontrado durante implementacao do CRUD completo

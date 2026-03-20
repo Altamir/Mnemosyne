@@ -15,6 +15,7 @@ using Mnemosyne.Domain.Services;
 using Mnemosyne.Infrastructure.Compression;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
+using Mnemosyne.Infrastructure.Services;
 using Mnemosyne.Api.Endpoints;
 using Mnemosyne.Api.Middleware;
 
@@ -43,6 +44,8 @@ builder.Services.AddScoped<GetIndexStatusHandler>();
 
 builder.Services.AddSingleton<ICompressionStrategy, CodeStructureCompressionStrategy>();
 builder.Services.AddScoped<CompressContextHandler>();
+
+builder.Services.AddHostedService<ProjectIndexerService>();
 
 builder.Services.AddOpenApi();
 

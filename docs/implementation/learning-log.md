@@ -32,8 +32,17 @@
 - Protecao contra duplicate index jobs (InvalidOperationException se ja em andamento)
 - Endpoint POST /api/v1/projects/{id}/index para iniciar indexacao
 - Endpoint GET /api/v1/projects/{id}/index/status para consultar status
-- ProjectIndexJobRepository com GetPendingOrProcessingByProjectIdAsync
+- ProjectIndexJobRepository com GetPendingOrProcessingByProjectIdAsync, UpdateAsync, GetPendingJobsAsync
 - Configuration EntityFramework para project_index_jobs table
+- ProjectIndexerService (BackgroundService) processa jobs pendentes com polling de 10s
+  - Transiciona jobs: Pending -> Processing -> Completed (ou Failed em caso de erro)
+  - Dual-constructor pattern: producao (IServiceScopeFactory) e teste (dependencias diretas)
+  - InternalsVisibleTo permite acesso ao construtor interno nos testes unitarios
+  - MemoryEntity nao tem ProjectId — indexacao marca jobs como completed com 0 memories processadas
+- Registrado como AddHostedService<ProjectIndexerService> no Program.cs
+- 14 testes de dominio (ProjectIndexJobEntityTests): Create, MarkAsProcessing, MarkAsCompleted, MarkAsFailed, SetTotalMemories
+- 5 testes de servico (ProjectIndexerServiceTests): pending jobs, no jobs, error handling, state transitions, multiple jobs
+- 7 testes de integracao (ProjectIndexEndpointTests): start index, conflict, 404, status, auth
 
 #### Task 01 - Autenticacao API Key
 - Implementado UserEntity com hash BCrypt para seguranca de API Keys

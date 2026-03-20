@@ -21,6 +21,13 @@ public class ProjectIndexJobRepository : IProjectIndexJobRepository
         return job;
     }
 
+    public async Task<ProjectIndexJobEntity> UpdateAsync(ProjectIndexJobEntity job, CancellationToken cancellationToken)
+    {
+        _context.ProjectIndexJobs.Update(job);
+        await _context.SaveChangesAsync(cancellationToken);
+        return job;
+    }
+
     public async Task<ProjectIndexJobEntity?> GetLatestByProjectIdAsync(Guid projectId, CancellationToken cancellationToken)
     {
         return await _context.ProjectIndexJobs
@@ -35,5 +42,13 @@ public class ProjectIndexJobRepository : IProjectIndexJobRepository
             .Where(j => j.ProjectId == projectId && (j.Status == IndexStatus.Pending || j.Status == IndexStatus.Processing))
             .OrderByDescending(j => j.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ProjectIndexJobEntity>> GetPendingJobsAsync(CancellationToken cancellationToken)
+    {
+        return await _context.ProjectIndexJobs
+            .Where(j => j.Status == IndexStatus.Pending)
+            .OrderBy(j => j.CreatedAt)
+            .ToListAsync(cancellationToken);
     }
 }
