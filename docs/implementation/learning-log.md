@@ -15,6 +15,8 @@
 - Estrategias registradas como Singleton (stateless), handler como Scoped
 - 100% line coverage e 98% branch coverage nos arquivos de compressao
 - 21 testes unitarios (9 handler + 12 strategy) cobrindo todos os cenarios
+- 10 testes de integracao para endpoint /api/v1/compress
+- Testes de integracao verificam: compressao valida, validacao de entrada, autenticacao
 
 #### Task 04 - OpenAI Embedding Service
 - Implementado IEmbeddingService interface em Domain.Interfaces
