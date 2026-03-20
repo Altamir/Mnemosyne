@@ -32,6 +32,8 @@ digraph task_workflow {
     node [shape=box];
 
     start [label="Usuario solicita task" shape=doublecircle];
+    check_progress [label="PROGRESSO\nVerificar/criar tabela no index.md"];
+    mark_started [label="Marcar task como\n'Em andamento' no index.md"];
     prep [label="PREPARACAO\nLer index.md + task spec"];
     todo [label="Criar TodoWrite\ncom cada passo TDD"];
     red [label="RED\nEscrever teste que falha"];
@@ -45,9 +47,12 @@ digraph task_workflow {
     docs [label="DOCUMENTACAO\nlearning-log + error-fix-log + ADR"];
     coverage [label="FINALIZACAO\ndotnet test --collect + verificar >= 70%"];
     commit [label="COMMIT\nAtomico, pt-BR, conventional"];
+    mark_done [label="Marcar task como\n'Concluida' no index.md"];
     done [label="Task concluida" shape=doublecircle];
 
-    start -> prep;
+    start -> check_progress;
+    check_progress -> mark_started;
+    mark_started -> prep;
     prep -> todo;
     todo -> red;
     red -> verify_red;
@@ -63,13 +68,46 @@ digraph task_workflow {
     more -> docs [label="nao"];
     docs -> coverage;
     coverage -> commit;
-    commit -> done;
+    commit -> mark_done;
+    mark_done -> done;
 }
 ```
 
 ---
 
 ## Fase 1: Preparacao
+
+### 1.0 Verificar/criar tabela de progresso no index.md
+
+**Este e o PRIMEIRO passo, antes de qualquer outra coisa.**
+
+Leia `docs/plan/fase{N}/index.md` e verifique se existe a secao `## Progresso` no final do arquivo.
+
+**Se NAO existir:** crie a secao no final do `index.md` com todas as tasks listadas. Determine o status de cada task verificando se o codigo correspondente ja existe no codebase (arquivos criados, handlers implementados, testes presentes). Exemplo:
+
+```markdown
+## Progresso
+
+| # | Task | Status |
+|---|------|--------|
+| 01 | Autenticacao por API Key | Concluida |
+| 02 | CRUD de projetos | Concluida |
+| 03 | Indexacao assincrona | Concluida |
+| 04 | OpenAI Embedding Service | Concluida |
+| 05 | Compressao de contexto | Concluida |
+| 06 | gRPC Services | Pendente |
+| 07 | Observabilidade | Pendente |
+| 08 | Hardening | Pendente |
+```
+
+**Se JA existir:** leia a tabela para entender o estado atual. Use essa informacao para saber onde retomar.
+
+**Status possiveis:**
+- `Pendente` -- task nao iniciada
+- `Em andamento` -- task sendo implementada agora
+- `Concluida` -- task finalizada e commitada
+
+Apos verificar/criar a tabela, **marque a task atual como `Em andamento`** no index.md.
 
 ### 1.1 Ler o index da fase
 
@@ -238,6 +276,14 @@ Regras:
 - Nunca misturar features nao relacionadas
 
 **REQUIRED:** Carregue a skill `commit-safety` antes de commitar.
+
+### 4.4 Atualizar progresso no index.md
+
+Apos o commit, abra `docs/plan/fase{N}/index.md` e altere o status da task de `Em andamento` para `Concluida` na tabela `## Progresso`.
+
+Isso fecha o ciclo iniciado no passo 1.0. Se voce esqueceu de criar a tabela la, crie agora seguindo as instrucoes do 1.0 e marque esta task como `Concluida`.
+
+**Importante:** Esta alteracao no index.md NAO precisa de commit separado -- inclua no mesmo commit de documentacao ou no proximo commit atomico logico.
 
 ---
 
