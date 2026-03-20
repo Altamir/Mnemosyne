@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Mnemosyne.Application.Features.Auth.ValidateApiKey;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
 using Mnemosyne.Application.Features.Memory.SearchMemory;
+using Mnemosyne.Application.Features.Project.CreateProject;
 using Mnemosyne.Domain.Interfaces;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
 using Mnemosyne.Api.Endpoints;
+using Mnemosyne.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +18,11 @@ builder.Services.AddDbContext<MnemosyneDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IMemoryRepository, MemoryRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<CreateMemoryHandler>();
 builder.Services.AddScoped<SearchMemoryHandler>();
+builder.Services.AddScoped<ValidateApiKeyHandler>();
+builder.Services.AddScoped<CreateProjectHandler>();
 
 builder.Services.AddOpenApi();
 
@@ -29,7 +35,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapAuthEndpoints();
+app.UseApiKeyValidation();
+
 app.MapMemoryEndpoints();
+app.MapProjectEndpoints();
 
 app.MapHealthEndpoints();
 
