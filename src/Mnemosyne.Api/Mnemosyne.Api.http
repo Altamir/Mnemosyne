@@ -1,0 +1,19 @@
+@Mnemosyne.Api_HostAddress = http://localhost:5226
+
+### Create a memory
+POST {{Mnemosyne.Api_HostAddress}}/api/v1/memory/
+Content-Type: application/json
+
+{
+  "content": "Example memory content",
+  "type": 0
+}
+
+### Search memories
+GET {{Mnemosyne.Api_HostAddress}}/api/v1/memory/search?q=example&topK=10
+
+### Health - Liveness
+GET {{Mnemosyne.Api_HostAddress}}/health/live
+
+### Health - Readiness
+GET {{Mnemosyne.Api_HostAddress}}/health/ready
