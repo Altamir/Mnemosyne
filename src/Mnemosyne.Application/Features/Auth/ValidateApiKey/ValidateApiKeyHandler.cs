@@ -19,7 +19,7 @@ public class ValidateApiKeyHandler
             throw new ArgumentException("API Key cannot be empty", nameof(query.ApiKey));
         }
 
-        var user = await _userRepository.GetByApiKeyHashAsync(query.ApiKey, cancellationToken);
+        var user = await _userRepository.GetByApiKeyAsync(query.ApiKey, cancellationToken);
         return user;
     }
 }

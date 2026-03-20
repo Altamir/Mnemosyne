@@ -30,7 +30,7 @@ public class ValidateApiKeyHandlerTests
         var user = UserEntity.Create(apiKey, "testuser@test.com");
         var query = new ValidateApiKeyQuery(apiKey);
         _repositoryMock
-            .Setup(x => x.GetByApiKeyHashAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByApiKeyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -40,7 +40,7 @@ public class ValidateApiKeyHandlerTests
         Assert.NotNull(result);
         Assert.Equal(user.Id, result.Id);
         Assert.Equal(user.Email, result.Email);
-        _repositoryMock.Verify(x => x.GetByApiKeyHashAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        _repositoryMock.Verify(x => x.GetByApiKeyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact(DisplayName = "API Key invalida retorna null")]
@@ -51,7 +51,7 @@ public class ValidateApiKeyHandlerTests
         var apiKey = _fixture.Create<string>();
         var query = new ValidateApiKeyQuery(apiKey);
         _repositoryMock
-            .Setup(x => x.GetByApiKeyHashAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByApiKeyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserEntity?)null);
 
         // Act
@@ -59,7 +59,7 @@ public class ValidateApiKeyHandlerTests
 
         // Assert
         Assert.Null(result);
-        _repositoryMock.Verify(x => x.GetByApiKeyHashAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        _repositoryMock.Verify(x => x.GetByApiKeyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact(DisplayName = "API Key vazia lanca ArgumentException")]
@@ -71,7 +71,7 @@ public class ValidateApiKeyHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(query, CancellationToken.None));
-        _repositoryMock.Verify(x => x.GetByApiKeyHashAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositoryMock.Verify(x => x.GetByApiKeyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact(DisplayName = "API Key whitespace lanca ArgumentException")]
@@ -83,6 +83,6 @@ public class ValidateApiKeyHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(query, CancellationToken.None));
-        _repositoryMock.Verify(x => x.GetByApiKeyHashAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositoryMock.Verify(x => x.GetByApiKeyAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -37,10 +37,22 @@
 
 #### Task 01 - Autenticacao API Key
 - Implementado UserEntity com hash BCrypt para seguranca de API Keys
-- API Key传出 via header `X-Api-Key`
+- API Key via header `X-Api-Key`
 - ValidateApiKeyHandler como Query Handler para validacao
 - ApiKeyMiddleware protege todos os endpoints exceto `/api/v1/auth/*`
 - Middleware injeta UserId no HttpContext.Items para acesso posterior
+- UserRepository usa BCrypt.Verify para busca (carrega todos os usuarios e verifica cada um)
+  - BCrypt hashes sao nao-deterministicos: nao e possivel fazer WHERE hash = @hash
+  - Aceitavel para sistema self-hosted com poucos usuarios
+- UserEntityConfiguration mapeia para tabela `users` schema `mnemosyne` com snake_case
+- Testes de integracao via WebApplicationFactory<Program> com InMemory DB
+  - Necessario substituir DbContext completo (remover Npgsql provider para evitar conflito dual-provider)
+  - Necessario registrar stub de IEmbeddingService (dependencia de Task 4 nao registrada)
+  - Necessario ignorar coluna Embedding (pgvector Vector nao suportado pelo InMemory provider)
+  - Necessario registrar handlers de Task 3 (StartProjectIndex, GetIndexStatus) para evitar falha de inferencia de parametros
+- Bug pre-existente corrigido: MemoryEndpoints.MapGet("/search") usava `handler = null!` como default
+  - Minimal API nao infere corretamente servicos DI com valores default
+  - Corrigido com `[FromServices]` explicito
 
 #### Task 02 - CRUD de Projetos
 - ProjectEntity com isolamento logico por UserId

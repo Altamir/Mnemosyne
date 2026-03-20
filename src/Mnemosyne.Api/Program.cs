@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Mnemosyne.Application.Features.Auth.ValidateApiKey;
 using Mnemosyne.Application.Features.Compress.CompressContext;
+using Mnemosyne.Application.Features.Index.GetIndexStatus;
+using Mnemosyne.Application.Features.Index.StartProjectIndex;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
 using Mnemosyne.Application.Features.Memory.SearchMemory;
 using Mnemosyne.Application.Features.Project.CreateProject;
@@ -22,10 +24,14 @@ builder.Services.AddDbContext<MnemosyneDbContext>(options =>
 
 builder.Services.AddScoped<IMemoryRepository, MemoryRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectIndexJobRepository, ProjectIndexJobRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<CreateMemoryHandler>();
 builder.Services.AddScoped<SearchMemoryHandler>();
 builder.Services.AddScoped<ValidateApiKeyHandler>();
 builder.Services.AddScoped<CreateProjectHandler>();
+builder.Services.AddScoped<StartProjectIndexHandler>();
+builder.Services.AddScoped<GetIndexStatusHandler>();
 
 builder.Services.AddSingleton<ICompressionStrategy, CodeStructureCompressionStrategy>();
 builder.Services.AddScoped<CompressContextHandler>();

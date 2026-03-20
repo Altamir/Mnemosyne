@@ -20,9 +20,15 @@
 
 #### Issue: Testcontainers PostgreSql com WebApplicationFactory
 - **Problem:** Integration tests com ValidateApiKeyEndpointTests falhavam ao usar WebApplicationFactory<Program>
-- **Causa:** ValidateApiKeyHandler requer IUserRepository scoped registration
-- **Fix:** Removido teste de integracao - unit tests cobrem o comportamento necessario
-- **Solucao futura:** Configurar WebApplicationFactory com services overrides
+- **Causa:** Multiplos problemas: (1) IEmbeddingService nao registrado no DI, (2) conflito dual-provider Npgsql vs InMemory, (3) coluna pgvector Vector nao suportada pelo InMemory provider, (4) handlers de Task 3 nao registrados causando falha de inferencia de parametros do Minimal API
+- **Fix:** Criado MnemosyneWebAppFactory que: remove todos os descriptors EF Core/Npgsql, registra InMemory com callback para ignorar Embedding, registra StubEmbeddingService, e registra handlers ausentes no Program.cs
+- **Aprendizado:** WebApplicationFactory requer substituicao completa do provider EF Core (nao basta remover DbContextOptions), e o Minimal API valida TODOS os endpoints na inicializacao (nao apenas os chamados)
+
+#### Issue: MemoryEndpoints /search com inferencia de parametros invalida
+- **Problem:** `SearchMemoryHandler handler = null!` como parametro default fazia ASP.NET Minimal API nao reconhecer como servico DI
+- **Causa:** Parametros com valor default nao sao inferidos como `[FromServices]` pelo Minimal API
+- **Fix:** Adicionado atributo `[FromServices]` explicito e removido valor default `= null!`
+- **Referencia:** Minimal API infere servicos DI apenas para parametros sem default value
 
 ## Fase 1 - Foundation
 

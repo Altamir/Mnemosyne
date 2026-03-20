@@ -46,3 +46,16 @@ Este indice organiza as tasks da fase 2 em arquivos numerados, com ordem de impl
 - Seguir TDD estrito em cada task: RED -> GREEN -> REFACTOR -> DOCS -> COMMIT.
 - Codigo sempre em ingles.
 - Documentacao sempre em pt-BR.
+
+## Progresso
+
+| # | Task | Status |
+|---|------|--------|
+| 01 | Autenticacao por API Key | Concluido |
+| 02 | CRUD de projetos | Parcial (so Create, falta R/U/D + testes integracao) |
+| 03 | Indexacao assincrona | Parcial (falta DI, ProjectIndexerService, testes integracao) |
+| 04 | OpenAI Embedding Service | Parcial (falta DI, config, testes integracao) |
+| 05 | Compressao de contexto | Parcial (falta testes integracao) |
+| 06 | gRPC Services | Pendente |
+| 07 | Observabilidade | Parcial (so endpoints manuais basicos) |
+| 08 | Hardening | Pendente |
