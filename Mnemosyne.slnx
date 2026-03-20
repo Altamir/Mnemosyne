@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Mnemosyne.Api/Mnemosyne.Api.csproj" />
+    <Project Path="src/Mnemosyne.Application/Mnemosyne.Application.csproj" />
+    <Project Path="src/Mnemosyne.Domain/Mnemosyne.Domain.csproj" />
+    <Project Path="src/Mnemosyne.Infrastructure/Mnemosyne.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Mnemosyne.IntegrationTests/Mnemosyne.IntegrationTests.csproj" />
+    <Project Path="tests/Mnemosyne.UnitTests/Mnemosyne.UnitTests.csproj" />
+  </Folder>
+</Solution>
