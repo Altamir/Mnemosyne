@@ -1,182 +1,166 @@
 # AGENTS.md
 
-## Visão Geral do Projeto
+Mnemosyne -- semantic memory management system with vector indexing.
 
-Mnemosyne é um sistema de gerenciamento de memórias semântico com indexação vetorial.
+## Stack
 
-## Stack Tecnológica
+- **.NET 10** (C#), Minimal APIs, EF Core + Npgsql
+- **PostgreSQL 18 + pgvector 0.8.2** for vector persistence
+- **xUnit + Moq + AutoFixture** for tests, **Testcontainers** for integration tests
+- No MediatR -- plain handler classes with manual DI registration
 
-- **.NET 10** com C#
-- **PostgreSQL + pgvector** para persistência vetorial
-- **xUnit + Moq + AutoFixture** para testes
-- **Minimal APIs** com endpoints registradores
-
-## Estrutura do Projeto
+## Project Structure
 
 ```
 src/
-├── Mnemosyne.Api/              # Endpoints, Middleware, Program.cs
-├── Mnemosyne.Application/      # Handlers, Commands, Queries
-├── Mnemosyne.Domain/           # Entities, Interfaces, Enums
-├── Mnemosyne.Infrastructure/    # Repositories, DbContext, Configurations
+  Mnemosyne.Api/              # Endpoints, Middleware, Program.cs
+  Mnemosyne.Application/      # Features/{Domain}/{Action}/ (Commands, Queries, Handlers)
+  Mnemosyne.Domain/           # Entities, Interfaces, Enums, Services
+  Mnemosyne.Infrastructure/   # Repositories, Persistence, AI, Compression
 tests/
-├── Mnemosyne.UnitTests/        # Testes unitários
-└── Mnemosyne.IntegrationTests/  # Testes de integração (PostgreSQL)
+  Mnemosyne.UnitTests/        # Unit tests (mirrors Application/Domain/Infrastructure)
+  Mnemosyne.IntegrationTests/ # Integration tests with Testcontainers (PostgreSQL)
 ```
 
-## Convenções Obrigatórias
+Solution file: `Mnemosyne.slnx` (XML-based `.slnx` format, not legacy `.sln`).
 
-### Código
-- **Código em inglês** (classes, métodos, variáveis)
-- **Documentação em pt-BR** (XML, README, .md)
-- **Commits em pt-BR** (Conventional Commits)
-- **Mensagens de erro em pt-BR** para o usuário
-
-### Nomenclatura
-| Tipo | Padrão |
-|------|--------|
-| Command | `CreateMemoryCommand`, `DeleteProjectCommand` |
-| Query | `SearchMemoryQuery`, `GetProjectByIdQuery` |
-| Handler | `CreateMemoryHandler`, `SearchMemoryHandler` |
-| Repository | `IMemoryRepository`, `MemoryRepository` |
-| Endpoint | `MemoryEndpoints`, `ProjectEndpoints` |
-
-### Camadas
-- `Domain/` - Entidades, Interfaces de Repositório, Enums
-- `Application/Features/` - Commands, Queries, Handlers
-- `Infrastructure/Repositories/` - Implementações de Repositório
-- `Api/Endpoints/` - Minimal API endpoints
-
-## Skills Obrigatórias
-
-Ao trabalhar neste projeto, **SEMPRE** carregue estas skills:
-
-```
-@using-superpowers     # Obrigatório em qualquer conversa
-@dotnet-conventions    # Ao escrever código .NET
-@xunit-tests          # Ao criar/modificar testes
-@commit-safety        # Ao fazer commits
-@test-driven-development # Ao implementar funcionalidades
-```
-
-## TDD Workflow
-
-```
-RED  -> Escrever teste primeiro, assistir falha
-GREEN -> Implementar código mínimo para passar
-REFACTOR -> Limpar código mantendo testes verdes
-```
-
-### Ciclo de Desenvolvimento
-
-1. Escrever teste (RED)
-2. Executar `dotnet test` - confirmar falha
-3. Implementar código mínimo (GREEN)
-4. Executar `dotnet test` - confirmar sucesso
-5. Refatorar se necessário
-6. Atualizar documentação em `docs/implementation/`
-7. Executar `dotnet test` com cobertura e verificar cobertura aceitável
-8. Commitar
-
-## Finalização de Task
-
-**SEMPRE ao finalizar uma task:**
-
-1. Executar todos os testes: `dotnet test`
-2. Verificar cobertura: `dotnet test --collect:"XPlat Code Coverage"`
-3. Cobertura mínima aceitável: **70%** de line coverage
-4. Se cobertura estiver abaixo, adicionar testes até atingir threshold
-5. Atualizar documentação:
-   - `docs/implementation/learning-log.md` - entradas para aprendizados
-   - `docs/implementation/error-fix-log.md` - issues encontrados e correções
-   - `docs/implementation/adr/` - ADRs se decisões arquiteturais tomadas
-6. Commitar apenas código testado e coberto
-
-## Comandos Úteis
+## Build & Test Commands
 
 ```bash
-# Compilar
-dotnet build
+dotnet build                                    # Build all projects
+dotnet test                                     # Run all tests
+dotnet test tests/Mnemosyne.UnitTests           # Unit tests only
+dotnet test tests/Mnemosyne.IntegrationTests    # Integration tests only
 
-# Testes unitários
-dotnet test tests/Mnemosyne.UnitTests
+# Run a single test by fully-qualified name
+dotnet test --filter "FullyQualifiedName~CreateMemoryHandlerTests.ValidContent_Executed_ReturnsCreatedMemory"
 
-# Testes de integração
-dotnet test tests/Mnemosyne.IntegrationTests
+# Run tests by class name
+dotnet test --filter "ClassName~CreateMemoryHandlerTests"
 
-# Todos os testes
-dotnet test
+# Run tests by Trait
+dotnet test --filter "Layer=Application - Commands"
 
-# Testes com cobertura
+# Run tests with coverage
 dotnet test --collect:"XPlat Code Coverage"
 
-# Gerar relatório de cobertura
+# Generate coverage report (requires reportgenerator tool)
 reportgenerator -reports:"tests/**/coverage.cobertura.xml" -targetdir:"coverage"
 ```
 
-## Commits
+Minimum coverage threshold: **70%** line coverage.
 
-### Formato
-```
-<tipo>(<escopo>): <descrição>
+## Infrastructure
 
-<corpo opcional>
-```
-
-### Tipos
-- `feat` - Nova funcionalidade
-- `fix` - Correção de bug
-- `docs` - Documentação
-- `test` - Testes
-- `chore` - Tarefas diversas (deps, config)
-- `refactor` - Refatoração
-
-### Exemplo
 ```bash
-git commit -m "feat: adiciona endpoint de busca semântica
-
-- adiciona SearchMemoryQuery e handler
-- integra com pgvector para busca por similaridade
-- adiciona testes unitários"
+docker compose up -d    # Start PostgreSQL with pgvector
+# Connection: Host=localhost;Database=mnemosyne;Username=postgres;Password=postgres
 ```
 
-## Commits Atômicos
+## Language Conventions
 
-**Regra:** Um commit por tarefa lógica. Nunca misturar:
-- Mudanças de código com mudanças de documentação
-- Múltiplas features no mesmo commit
-- Fixes não relacionados no mesmo commit
+| Context               | Language |
+|-----------------------|----------|
+| Code (classes, methods, variables) | English |
+| Commits               | pt-BR (Conventional Commits) |
+| Documentation (XML, README, .md)   | pt-BR |
+| User-facing error messages          | pt-BR |
+| System logs           | English |
 
-## Desenvolvimento de Features
+## Naming Conventions
 
-### Plano de Implementação
-Quando implementar features complexas, criar plano em `docs/plans/` seguindo skill `@writing-plans`.
+| Type         | Pattern                        | Example                     |
+|--------------|--------------------------------|-----------------------------|
+| Command      | `{Action}{Entity}Command`      | `CreateMemoryCommand`       |
+| Query        | `{Action}{Entity}Query`        | `SearchMemoryQuery`         |
+| Handler      | `{Action}{Entity}Handler`      | `CreateMemoryHandler`       |
+| Repository   | `I{Entity}Repository` / `{Entity}Repository` | `IMemoryRepository` |
+| Endpoint     | `{Entity}Endpoints`            | `MemoryEndpoints`           |
+| Entity       | `{Entity}Entity`               | `MemoryEntity`              |
+| Test class   | `{ClassUnderTest}Tests`        | `CreateMemoryHandlerTests`  |
+| Test method  | `{Condition}_Executed_{Result}`| `ValidContent_Executed_ReturnsCreatedMemory` |
+| Private field| `_{camelCase}`                 | `_repositoryMock`           |
 
-### Tasks da Fase 2 (Exemplo)
-1. Task 01: Autenticacao API Key
-2. Task 02: CRUD de Projetos
-3. Task 03: Indexacao Assíncrona
-4. Task 04: OpenAI Embedding Service
-5. Task 05: Compressao de Contexto
-6. Task 06: gRPC Services
-7. Task 07: Observabilidade
-8. Task 08: Hardening
+## Code Style
 
-## Pastas a Ignorar
+- **Nullable**: enabled globally, all projects
+- **Implicit usings**: enabled (no GlobalUsings.cs files)
+- **File-scoped namespaces**: `namespace X.Y.Z;` (no braces)
+- **Records for DTOs**: Commands/Queries are C# `record` types with primary constructors
+- **No `.editorconfig` or analyzers** -- follow patterns in existing code
+- **Entity pattern**: private constructor + static `Create()` factory, private setters, validation in factory
+- **Handler pattern**: plain class with `Handle(TCommand, CancellationToken)` method, constructor-injected dependencies, inline validation (no FluentValidation)
+- **Endpoint pattern**: static class with `Map{Entity}Endpoints(this WebApplication)` extension method, route groups at `/api/v1/{resource}`, request records colocated in same file
+- **DI registration**: manual `AddScoped`/`AddSingleton` in `Program.cs` (no reflection-based scanning)
+- **Error handling in domain**: throw `ArgumentException` for invalid arguments in entity factories
+- **Error handling in handlers**: validate inputs, throw exceptions for business rule violations
+
+## Test Conventions
+
+- **Framework**: xUnit with `[Fact]` and `[Theory]`/`[InlineData]`
+- **Display names**: pt-BR via `[Fact(DisplayName = "Descricao em portugues")]`
+- **Traits**: `[Trait("Layer", "Application - Commands")]`, `[Trait("Layer", "Application - Queries")]`, `[Trait("Layer", "Infrastructure - Compression")]`
+- **Structure**: AAA pattern with explicit `// Arrange`, `// Act`, `// Assert` comments (or `// Act & Assert`)
+- **Mocking**: Moq -- `Mock<IInterface>`, `.Setup().ReturnsAsync()`, `.Verify(Times.Once/Never)`
+- **Test data**: AutoFixture with recursion behavior configured in constructor:
+  ```csharp
+  _fixture = new Fixture();
+  _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+  _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+  ```
+- **Setup**: constructor-based (no `[SetUp]` or `IClassFixture` for unit tests)
+- **Assertions**: xUnit `Assert.*` only (no FluentAssertions)
+- **Integration tests**: Testcontainers with `pgvector/pgvector:0.8.2-pg18-trixie`, `IAsyncLifetime`
+
+## Commit Format
 
 ```
-bin/
-obj/
-Debug/
-Release/
-coverage/
-*.user
-*.suo
+<type>(<scope>): <description in pt-BR>
+
+<optional body in pt-BR>
 ```
 
-## Recursos
+Types: `feat`, `fix`, `docs`, `test`, `chore`, `refactor`
 
-- [dotnet-conventions skill](./.config/opencode/skills/dotnet-conventions/SKILL.md)
-- [xunit-tests skill](./.config/opencode/skills/xunit-tests/SKILL.md)
-- [test-driven-development skill](./.config/opencode/skills/superpowers/test-driven-development/SKILL.md)
-- [commit-safety skill](./.config/opencode/skills/commit-safety/SKILL.md)
+Atomic commits -- one logical change per commit. Never mix code changes with documentation changes.
+
+## Application Architecture
+
+```
+Endpoint -> Handler -> Repository -> Database
+                    -> IEmbeddingService (for vector generation)
+                    -> ICompressionStrategy (for context compression)
+```
+
+- No MediatR/CQRS library -- handlers are plain classes injected directly
+- Commands/Queries are records in `Application/Features/{Domain}/{Action}/`
+- Each feature folder contains its command/query record + handler class
+- Repositories implement interfaces from `Domain/Interfaces/`
+- EF Core configurations in `Infrastructure/Persistence/Configurations/`
+- Database uses `mnemosyne` schema, snake_case table/column names, `vector(1536)` for embeddings
+
+## Key Dependencies
+
+| Package | Project | Purpose |
+|---------|---------|---------|
+| Pgvector + Pgvector.EntityFrameworkCore | Domain, Infrastructure | Vector type and EF Core integration |
+| BCrypt.Net-Next | Domain | API key hashing |
+| OpenAI (2.9.1) | Infrastructure | Embedding generation |
+| Npgsql.EntityFrameworkCore.PostgreSQL | Infrastructure | PostgreSQL EF Core provider |
+| Testcontainers.PostgreSql | IntegrationTests | Containerized test database |
+
+## Development Workflow Skill
+
+When executing roadmap tasks (phases/tasks from `docs/plan/`), load the project-specific skill:
+
+```
+.opencode/skills/mnemosyne-task-workflow/SKILL.md
+```
+
+This skill guides the full cycle: read task spec -> TDD (RED/GREEN/REFACTOR) -> documentation -> commit.
+
+## Files to Ignore
+
+```
+bin/ obj/ Debug/ Release/ coverage/ coverage-results/ *.user *.suo .DS_Store
+```
