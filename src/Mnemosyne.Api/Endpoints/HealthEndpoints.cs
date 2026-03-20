@@ -23,10 +23,6 @@ public static class HealthEndpoints
                 }
                 return Results.Json(new { status = "not ready", database = "disconnected" }, statusCode: 503);
             }
-            catch (Exception ex) when (ex is NotSupportedException)
-            {
-                return Results.Ok(new { status = "ready", database = "inmemory" });
-            }
             catch (Exception)
             {
                 return Results.Json(new { status = "not ready", database = "error" }, statusCode: 503);

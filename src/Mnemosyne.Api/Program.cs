@@ -34,3 +34,5 @@ app.MapMemoryEndpoints();
 app.MapHealthEndpoints();
 
 app.Run();
+
+public partial class Program { }

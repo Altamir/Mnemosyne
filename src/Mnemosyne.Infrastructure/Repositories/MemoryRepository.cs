@@ -3,6 +3,7 @@ using Mnemosyne.Domain.Entities;
 using Mnemosyne.Domain.Interfaces;
 using Mnemosyne.Infrastructure.Persistence;
 using Pgvector;
+using Pgvector.EntityFrameworkCore;
 
 namespace Mnemosyne.Infrastructure.Repositories;
 
@@ -30,7 +31,8 @@ public class MemoryRepository : IMemoryRepository
     public async Task<IReadOnlyList<MemoryEntity>> SearchByEmbeddingAsync(Vector queryEmbedding, CancellationToken cancellationToken, int topK)
     {
         return await _context.Memories
-            .OrderByDescending(m => m.CreatedAt)
+            .Where(m => m.Embedding != null)
+            .OrderBy(m => m.Embedding!.L2Distance(queryEmbedding))
             .Take(topK)
             .ToListAsync(cancellationToken);
     }

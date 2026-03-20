@@ -30,6 +30,8 @@ public static class MemoryEndpoints
 
         group.MapGet("/search", async (string? q, int topK = 10, SearchMemoryHandler handler = null!, CancellationToken cancellationToken = default) =>
         {
+            ArgumentNullException.ThrowIfNull(handler);
+
             if (topK <= 0)
             {
                 return Results.BadRequest(new { error = "topK must be greater than 0" });

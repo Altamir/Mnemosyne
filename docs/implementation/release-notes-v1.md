@@ -40,8 +40,8 @@
 
 1. **Sem autenticação** - API exposta sem autenticação (reservado para fase 2)
 2. **Sem rate limiting** - endpoints sem proteção contra sobrecarga
-4. **Embedding service mockado** - busca usa similaridade vetorial básica sem serviço de embedding dedicado
-5. **Testes de integração requerem Docker** - não funcionam em ambientes sem container runtime
+3. **Embedding service mockado** - busca usa similaridade vetorial básica sem serviço de embedding dedicado
+4. **Testes de integração requerem Docker** - não funcionam em ambientes sem container runtime
 
 ## Caminho para Produção
 
