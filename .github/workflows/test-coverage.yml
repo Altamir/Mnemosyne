@@ -39,8 +39,7 @@ jobs:
       - name: Run tests with coverage
         run: >-
           dotnet test
-          --collect:"XPlat Code Coverage"
-          --DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
+          --collect:"XPlat Code Coverage;Format=Cobertura,OpenCover"
           --logger "trx;LogFileName=results.trx"
           --results-directory ./TestResults
         env:
