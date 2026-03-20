@@ -9,6 +9,7 @@ public class MnemosyneDbContext : DbContext
 
     public DbSet<MemoryEntity> Memories => Set<MemoryEntity>();
     public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
+    public DbSet<ProjectIndexJobEntity> ProjectIndexJobs => Set<ProjectIndexJobEntity>();
 
     public MnemosyneDbContext(DbContextOptions<MnemosyneDbContext> options)
         : base(options)

@@ -4,6 +4,17 @@
 
 ### 2026-03-20
 
+#### Task 03 - Indexacao Assincrona de Projeto
+- Implementado ProjectIndexJobEntity para rastrear Jobs de indexacao
+- IndexStatus enum: Pending, Processing, Completed, Failed
+- StartProjectIndexCommand/Handler inicia job de indexacao
+- GetIndexStatusQuery/Handler retorna status do job mais recente
+- Protecao contra duplicate index jobs (InvalidOperationException se ja em andamento)
+- Endpoint POST /api/v1/projects/{id}/index para iniciar indexacao
+- Endpoint GET /api/v1/projects/{id}/index/status para consultar status
+- ProjectIndexJobRepository com GetPendingOrProcessingByProjectIdAsync
+- Configuration EntityFramework para project_index_jobs table
+
 #### Task 01 - Autenticacao API Key
 - Implementado UserEntity com hash BCrypt para seguranca de API Keys
 - API Key传出 via header `X-Api-Key`
