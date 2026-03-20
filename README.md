@@ -1,6 +1,6 @@
 # Mnemosyne
 
-[![codecov](https://codecov.io/gh/Altamir/Mnemosyne/graph/badge.svg?token=7D5LM9GVAS)](https://codecov.io/gh/Altamir/Mnemosyne)
+[![codecov](https://codecov.io/gh/Altamir/Mnemosyne/graph/badge.svg?branch=main)](https://codecov.io/gh/Altamir/Mnemosyne)
 
 Sistema de memória semântica de código aberto para projetos de software. Mnemosyne permite que times de desenvolvimento armazenarem, pesquisarem e gerenciarem o contexto de projeto — decisões de design, preferências, histórico de decisões técnicas — usando embeddings vetoriais para busca semântica.
 
