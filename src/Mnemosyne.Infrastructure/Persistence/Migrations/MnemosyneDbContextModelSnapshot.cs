@@ -7,7 +7,7 @@ using Mnemosyne.Infrastructure.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
 
-#nullable disable
+#nullable enable
 
 namespace Mnemosyne.Infrastructure.Persistence.Migrations
 {
