@@ -29,7 +29,6 @@ app.UseHttpsRedirection();
 
 app.MapMemoryEndpoints();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
-    .WithName("HealthCheck");
+app.MapHealthEndpoints();
 
 app.Run();
