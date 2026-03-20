@@ -55,7 +55,7 @@ Este indice organiza as tasks da fase 2 em arquivos numerados, com ordem de impl
 | 02 | CRUD de projetos | Concluido |
 | 03 | Indexacao assincrona | Concluido |
 | 04 | OpenAI Embedding Service | Concluido |
-| 05 | Compressao de contexto | Em andamento |
+| 05 | Compressao de contexto | Concluido |
 | 06 | gRPC Services | Pendente |
 | 07 | Observabilidade | Parcial (so endpoints manuais basicos) |
 | 08 | Hardening | Pendente |
