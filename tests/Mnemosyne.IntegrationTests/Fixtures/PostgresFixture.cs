@@ -16,8 +16,7 @@ public class PostgresFixture : IAsyncLifetime
         var user = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
         var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres";
 
-        _container = new PostgreSqlBuilder()
-            .WithImage("pgvector/pgvector:0.8.2-pg18-trixie")
+        _container = new PostgreSqlBuilder(image: "pgvector/pgvector:0.8.2-pg18-trixie")
             .WithUsername(user)
             .WithPassword(password)
             .Build();
