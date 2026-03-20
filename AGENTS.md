@@ -74,7 +74,23 @@ REFACTOR -> Limpar código mantendo testes verdes
 3. Implementar código mínimo (GREEN)
 4. Executar `dotnet test` - confirmar sucesso
 5. Refatorar se necessário
-6. Commitar
+6. Atualizar documentação em `docs/implementation/`
+7. Executar `dotnet test` com cobertura e verificar cobertura aceitável
+8. Commitar
+
+## Finalização de Task
+
+**SEMPRE ao finalizar uma task:**
+
+1. Executar todos os testes: `dotnet test`
+2. Verificar cobertura: `dotnet test --collect:"XPlat Code Coverage"`
+3. Cobertura mínima aceitável: **70%** de line coverage
+4. Se cobertura estiver abaixo, adicionar testes até atingir threshold
+5. Atualizar documentação:
+   - `docs/implementation/learning-log.md` - entradas para aprendizados
+   - `docs/implementation/error-fix-log.md` - issues encontrados e correções
+   - `docs/implementation/adr/` - ADRs se decisões arquiteturais tomadas
+6. Commitar apenas código testado e coberto
 
 ## Comandos Úteis
 
