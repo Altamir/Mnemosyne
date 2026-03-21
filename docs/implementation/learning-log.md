@@ -2,6 +2,26 @@
 
 ## Fase 2 - Autenticacao e Projetos
 
+### 2026-03-21
+
+#### Task 06 - gRPC Services
+- Adicionado pacote Grpc.AspNetCore (v2.76.0) ao projeto API
+- Criados 3 arquivos .proto: search.proto, index.proto, compress.proto
+- Cada proto define servico gRPC com mensagens Request/Response
+- Namespaces C# configurados como Mnemosyne.Api.Grpc
+- Implementados 3 servicos gRPC:
+  - SearchGrpcService: metodo Search (placeholder - necessita adaptacao do handler)
+  - IndexGrpcService: metodos StartIndex e GetIndexStatus (placeholder)
+  - CompressGrpcService: metodo Compress (funcional - integrado com CompressContextHandler)
+- Configuracao no Program.cs:
+  - AddGrpc() para registrar servicos gRPC
+  - MapGrpcService<T>() para cada servico
+- Testes de integracao verificam configuracao e inicializacao dos servicos
+- 4 testes de integracao (2 configuration + 1 search + 1 index)
+- gRPC services nao sao registrados no DI container - sao mapeados via endpoint routing
+- CompressGrpcService totalmente integrado com handler existente
+- Search e Index services implementados como placeholders (necessitam adaptacao dos handlers)
+
 ### 2026-03-20
 
 #### Task 05 - Compressao de Contexto

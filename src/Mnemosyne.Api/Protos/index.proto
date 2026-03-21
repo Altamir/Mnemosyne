@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mnemosyne.Api.Grpc";
+
+package index;
+
+// Servico de indexacao de projetos
+service IndexService {
+  // Inicia indexacao de um projeto
+  rpc StartIndex (StartIndexRequest) returns (StartIndexResponse);
+  
+  // Consulta status de indexacao
+  rpc GetIndexStatus (GetIndexStatusRequest) returns (GetIndexStatusResponse);
+}
+
+// Request para iniciar indexacao
+message StartIndexRequest {
+  string project_id = 1;
+}
+
+// Response de inicio de indexacao
+message StartIndexResponse {
+  string job_id = 1;
+  string status = 2;
+  string message = 3;
+}
+
+// Request para consultar status
+message GetIndexStatusRequest {
+  string project_id = 1;
+}
+
+// Response de status de indexacao
+message GetIndexStatusResponse {
+  string job_id = 1;
+  string status = 2;
+  int32 total_memories = 3;
+  int32 processed_memories = 4;
+  string started_at = 5;
+  string completed_at = 6;
+  string error_message = 7;
+}

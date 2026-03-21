@@ -18,6 +18,7 @@ using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
 using Mnemosyne.Infrastructure.Services;
 using Mnemosyne.Api.Endpoints;
+using Mnemosyne.Api.GrpcServices;
 using Mnemosyne.Api.Middleware;
 using OpenAI;
 using OpenAI.Embeddings;
@@ -63,6 +64,9 @@ builder.Services.AddSingleton<IEmbeddingService, OpenAiEmbeddingService>();
 
 builder.Services.AddHostedService<ProjectIndexerService>();
 
+// gRPC services
+builder.Services.AddGrpc();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -80,6 +84,11 @@ app.UseApiKeyValidation();
 app.MapMemoryEndpoints();
 app.MapProjectEndpoints();
 app.MapCompressEndpoints();
+
+// gRPC endpoints
+app.MapGrpcService<SearchGrpcService>();
+app.MapGrpcService<IndexGrpcService>();
+app.MapGrpcService<CompressGrpcService>();
 
 app.MapHealthEndpoints();
 

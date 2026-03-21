@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,6 +18,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Mnemosyne.Application\Mnemosyne.Application.csproj" />
     <ProjectReference Include="..\Mnemosyne.Infrastructure\Mnemosyne.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\search.proto" GrpcServices="Both" />
+    <Protobuf Include="Protos\index.proto" GrpcServices="Both" />
+    <Protobuf Include="Protos\compress.proto" GrpcServices="Both" />
   </ItemGroup>
 
 </Project>

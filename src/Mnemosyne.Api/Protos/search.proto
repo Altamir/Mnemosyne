@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mnemosyne.Api.Grpc";
+
+package search;
+
+// Servico de busca de memorias
+service SearchService {
+  // Busca memorias por texto com suporte a filtros
+  rpc Search (SearchRequest) returns (SearchResponse);
+}
+
+// Request de busca
+message SearchRequest {
+  string query = 1;
+  int32 limit = 2;
+  repeated string filters = 3;
+}
+
+// Response de busca
+message SearchResponse {
+  repeated MemoryResult results = 1;
+  int32 total_count = 2;
+}
+
+// Resultado individual de memoria
+message MemoryResult {
+  string id = 1;
+  string content = 2;
+  string memory_type = 3;
+  double score = 4;
+  string created_at = 5;
+}
