@@ -58,4 +58,4 @@ Este indice organiza as tasks da fase 2 em arquivos numerados, com ordem de impl
 | 05 | Compressao de contexto | Concluido |
 | 06 | gRPC Services | Concluido |
 | 07 | Observabilidade | Concluido |
-| 08 | Hardening | Pendente |
+| 08 | Hardening | Concluido |
