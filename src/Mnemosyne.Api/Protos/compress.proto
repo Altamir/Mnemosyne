@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mnemosyne.Api.Grpc";
+
+package compress;
+
+// Servico de compressao de contexto
+service CompressService {
+  // Comprime conteudo usando estrategia especificada
+  rpc Compress (CompressRequest) returns (CompressResponse);
+}
+
+// Request de compressao
+message CompressRequest {
+  string content = 1;
+  string strategy = 2;
+  double target_ratio = 3;
+}
+
+// Response de compressao
+message CompressResponse {
+  string compressed_content = 1;
+  int32 original_length = 2;
+  int32 compressed_length = 3;
+  double actual_ratio = 4;
+  string strategy_used = 5;
+}

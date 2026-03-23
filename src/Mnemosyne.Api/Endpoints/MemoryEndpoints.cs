@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
 using Mnemosyne.Application.Features.Memory.SearchMemory;
 using Mnemosyne.Domain.Enums;
@@ -28,10 +29,8 @@ public static class MemoryEndpoints
         .Produces(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest);
 
-        group.MapGet("/search", async (string? q, int topK = 10, SearchMemoryHandler handler = null!, CancellationToken cancellationToken = default) =>
+        group.MapGet("/search", async (string? q, int topK, [FromServices] SearchMemoryHandler handler, CancellationToken cancellationToken) =>
         {
-            ArgumentNullException.ThrowIfNull(handler);
-
             if (topK <= 0)
             {
                 return Results.BadRequest(new { error = "topK must be greater than 0" });

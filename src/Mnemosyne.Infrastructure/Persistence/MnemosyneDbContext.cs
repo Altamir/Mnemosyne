@@ -8,6 +8,9 @@ public class MnemosyneDbContext : DbContext
     private readonly Action<ModelBuilder>? _testModelConfiguration;
 
     public DbSet<MemoryEntity> Memories => Set<MemoryEntity>();
+    public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
+    public DbSet<ProjectIndexJobEntity> ProjectIndexJobs => Set<ProjectIndexJobEntity>();
+    public DbSet<UserEntity> Users => Set<UserEntity>();
 
     public MnemosyneDbContext(DbContextOptions<MnemosyneDbContext> options)
         : base(options)

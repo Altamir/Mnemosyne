@@ -14,6 +14,12 @@ public class MemoryEntity
 
     private MemoryEntity() { }
 
+    public void SetEmbedding(Vector? embedding)
+    {
+        Embedding = embedding;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public static MemoryEntity Create(string content, MemoryType type)
     {
         if (string.IsNullOrWhiteSpace(content))

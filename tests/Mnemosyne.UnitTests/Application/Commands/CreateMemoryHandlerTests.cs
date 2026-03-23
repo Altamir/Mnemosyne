@@ -4,22 +4,25 @@ using Mnemosyne.Domain.Entities;
 using Mnemosyne.Domain.Enums;
 using Mnemosyne.Domain.Interfaces;
 using Moq;
+using Pgvector;
 
 namespace Mnemosyne.UnitTests.Application.Commands;
 
 public class CreateMemoryHandlerTests
 {
     private readonly Mock<IMemoryRepository> _repositoryMock;
+    private readonly Mock<IEmbeddingService> _embeddingServiceMock;
     private readonly CreateMemoryHandler _handler;
     private readonly Fixture _fixture;
 
     public CreateMemoryHandlerTests()
     {
         _repositoryMock = new Mock<IMemoryRepository>();
+        _embeddingServiceMock = new Mock<IEmbeddingService>();
         _fixture = new Fixture();
         _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-        _handler = new CreateMemoryHandler(_repositoryMock.Object);
+        _handler = new CreateMemoryHandler(_repositoryMock.Object, _embeddingServiceMock.Object);
     }
 
     [Fact(DisplayName = "Criar memória com conteúdo válido retorna memória criada")]
@@ -34,6 +37,9 @@ public class CreateMemoryHandlerTests
         _repositoryMock
             .Setup(x => x.AddAsync(It.IsAny<MemoryEntity>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdMemory);
+        _embeddingServiceMock
+            .Setup(x => x.GenerateEmbeddingAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Vector?)null);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

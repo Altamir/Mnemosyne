@@ -1,10 +1,28 @@
 using Microsoft.EntityFrameworkCore;
+using Mnemosyne.Application.Features.Auth.ValidateApiKey;
+using Mnemosyne.Application.Features.Compress.CompressContext;
+using Mnemosyne.Application.Features.Index.GetIndexStatus;
+using Mnemosyne.Application.Features.Index.StartProjectIndex;
 using Mnemosyne.Application.Features.Memory.CreateMemory;
 using Mnemosyne.Application.Features.Memory.SearchMemory;
+using Mnemosyne.Application.Features.Project.CreateProject;
+using Mnemosyne.Application.Features.Project.DeleteProject;
+using Mnemosyne.Application.Features.Project.GetProject;
+using Mnemosyne.Application.Features.Project.ListProjects;
+using Mnemosyne.Application.Features.Project.UpdateProject;
 using Mnemosyne.Domain.Interfaces;
+using Mnemosyne.Domain.Services;
+using Mnemosyne.Infrastructure.AI;
+using Mnemosyne.Infrastructure.Compression;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
+using Mnemosyne.Infrastructure.Services;
+using Mnemosyne.Api.Configuration;
 using Mnemosyne.Api.Endpoints;
+using Mnemosyne.Api.GrpcServices;
+using Mnemosyne.Api.Middleware;
+using OpenAI;
+using OpenAI.Embeddings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +33,45 @@ builder.Services.AddDbContext<MnemosyneDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IMemoryRepository, MemoryRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectIndexJobRepository, ProjectIndexJobRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<CreateMemoryHandler>();
 builder.Services.AddScoped<SearchMemoryHandler>();
+builder.Services.AddScoped<ValidateApiKeyHandler>();
+builder.Services.AddScoped<CreateProjectHandler>();
+builder.Services.AddScoped<GetProjectHandler>();
+builder.Services.AddScoped<ListProjectsHandler>();
+builder.Services.AddScoped<UpdateProjectHandler>();
+builder.Services.AddScoped<DeleteProjectHandler>();
+builder.Services.AddScoped<StartProjectIndexHandler>();
+builder.Services.AddScoped<GetIndexStatusHandler>();
+
+builder.Services.AddSingleton<ICompressionStrategy, CodeStructureCompressionStrategy>();
+builder.Services.AddScoped<CompressContextHandler>();
+
+// OpenAI Embedding Service configuration
+var openAiApiKey = builder.Configuration["OpenAI:ApiKey"] 
+    ?? throw new InvalidOperationException("OpenAI:ApiKey configuration is required.");
+var embeddingModel = builder.Configuration["OpenAI:EmbeddingModel"] ?? "text-embedding-3-small";
+
+builder.Services.AddSingleton(new OpenAIClient(openAiApiKey));
+builder.Services.AddSingleton<EmbeddingClient>(sp => 
+{
+    var client = sp.GetRequiredService<OpenAIClient>();
+    return client.GetEmbeddingClient(embeddingModel);
+});
+builder.Services.AddSingleton<IEmbeddingService, OpenAiEmbeddingService>();
+
+builder.Services.AddHostedService<ProjectIndexerService>();
+
+// gRPC services
+builder.Services.AddGrpc();
+
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddCheck<PostgreSqlHealthCheck>("postgresql")
+    .AddCheck<OpenAiHealthCheck>("openai");
 
 builder.Services.AddOpenApi();
 
@@ -29,7 +84,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapAuthEndpoints();
+app.UseApiKeyValidation();
+
 app.MapMemoryEndpoints();
+app.MapProjectEndpoints();
+app.MapCompressEndpoints();
+
+// gRPC endpoints
+app.MapGrpcService<SearchGrpcService>();
+app.MapGrpcService<IndexGrpcService>();
+app.MapGrpcService<CompressGrpcService>();
 
 app.MapHealthEndpoints();
 
