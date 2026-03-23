@@ -2,6 +2,24 @@
 
 ## Fase 2 - Autenticacao e Projetos
 
+### 2026-03-22
+
+#### Task 07 - Observabilidade e Health Checks Detalhados
+- Adicionado pacote AspNetCore.HealthChecks.NpgSql (v9.0.0)
+- Implementados 2 health checks customizados:
+  - PostgreSqlHealthCheck: verifica conectividade com banco de dados via CanConnectAsync
+  - OpenAiHealthCheck: testa chamada simples a API OpenAI para verificar acessibilidade
+- Registro de health checks via AddHealthChecks() no Program.cs
+- 3 endpoints de saude configurados em HealthEndpoints.cs:
+  - /health/live: liveness probe - retorna 200 se servico esta rodando
+  - /health/ready: readiness probe - retorna 200 se todas dependencias sao healthy, 503 caso contrario
+  - /health: health check detalhado - retorna informacoes completas de todos os checks
+- Middleware ApiKeyMiddleware atualizado para excluir endpoints /health da autenticacao
+- 5 testes de integracao verificam endpoints de health check
+- Testes cobrem: status code correto, formato JSON, verificacao de checks registrados
+- Health checks utilizam HealthCheckService do ASP.NET Core para orquestracao
+- Retorno inclui: status agregado, timestamp, duracao total, lista de checks individuais
+
 ### 2026-03-21
 
 #### Task 06 - gRPC Services

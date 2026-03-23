@@ -17,6 +17,7 @@ using Mnemosyne.Infrastructure.Compression;
 using Mnemosyne.Infrastructure.Persistence;
 using Mnemosyne.Infrastructure.Repositories;
 using Mnemosyne.Infrastructure.Services;
+using Mnemosyne.Api.Configuration;
 using Mnemosyne.Api.Endpoints;
 using Mnemosyne.Api.GrpcServices;
 using Mnemosyne.Api.Middleware;
@@ -66,6 +67,11 @@ builder.Services.AddHostedService<ProjectIndexerService>();
 
 // gRPC services
 builder.Services.AddGrpc();
+
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddCheck<PostgreSqlHealthCheck>("postgresql")
+    .AddCheck<OpenAiHealthCheck>("openai");
 
 builder.Services.AddOpenApi();
 

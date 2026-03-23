@@ -15,7 +15,9 @@ public class ApiKeyMiddleware
 
     public async Task InvokeAsync(HttpContext context, ValidateApiKeyHandler handler)
     {
-        if (context.Request.Path.StartsWithSegments("/api/v1/auth"))
+        // Skip authentication for auth endpoints and health checks
+        if (context.Request.Path.StartsWithSegments("/api/v1/auth") ||
+            context.Request.Path.StartsWithSegments("/health"))
         {
             await _next(context);
             return;
