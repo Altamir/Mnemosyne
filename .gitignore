@@ -57,3 +57,10 @@ nunit-*.xml
 
 # Worktrees
 .worktrees/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+!.env.example

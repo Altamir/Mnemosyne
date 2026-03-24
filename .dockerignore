@@ -1,0 +1,38 @@
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+**/publish/
+!/publish/
+
+# IDE files
+**/.idea/
+**/.vs/
+**/*.user
+**/*.suo
+
+# Test and coverage
+tests/**/coverage.*
+tests/**/coverage-results/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+*.md
+
+# Docker files (not needed in context)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Environment files (should be mounted at runtime)
+.env
+.env.*
+!.env.example
+
+# Misc
+.DS_Store
+*.log
