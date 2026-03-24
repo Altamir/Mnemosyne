@@ -20,4 +20,11 @@ public class UserRepository : IUserRepository
 
         return users.FirstOrDefault(u => u.ValidateApiKey(apiKey));
     }
+
+    public async Task<UserEntity> AddAsync(UserEntity user, CancellationToken cancellationToken)
+    {
+        await _context.Users.AddAsync(user, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return user;
+    }
 }
