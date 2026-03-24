@@ -23,6 +23,7 @@ using Mnemosyne.Api.GrpcServices;
 using Mnemosyne.Api.Middleware;
 using OpenAI;
 using OpenAI.Embeddings;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,14 +74,69 @@ builder.Services.AddHealthChecks()
     .AddCheck<PostgreSqlHealthCheck>("postgresql")
     .AddCheck<OpenAiHealthCheck>("openai");
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new Microsoft.OpenApi.OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, Microsoft.OpenApi.IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes["ApiKey"] = new Microsoft.OpenApi.OpenApiSecurityScheme
+        {
+            Type = Microsoft.OpenApi.SecuritySchemeType.ApiKey,
+            In = Microsoft.OpenApi.ParameterLocation.Header,
+            Name = "X-Api-Key",
+            Description = "Chave de API para autenticação. Obtenha sua chave em POST /api/v1/auth/keys."
+        };
+
+        // Apply security requirements per operation instead of globally,
+        // so that public routes like /api/v1/auth/* and /health* remain unauthenticated.
+        document.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+        var globalRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
+        globalRequirement[new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null)] = new List<string>();
+        document.Security.Add(globalRequirement);
+
+        if (document.Paths != null)
+        {
+            var schemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null);
+            var requirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
+            requirement[schemeRef] = new List<string>();
+
+            foreach (var path in document.Paths)
+            {
+                var pathTemplate = path.Key ?? string.Empty;
+                var isPublic =
+                    pathTemplate.StartsWith("/api/v1/auth", StringComparison.OrdinalIgnoreCase) ||
+                    pathTemplate.StartsWith("/health", StringComparison.OrdinalIgnoreCase);
+
+                var pathItem = path.Value;
+                if (pathItem?.Operations == null)
+                {
+                    continue;
+                }
+
+                foreach (var operation in pathItem.Operations.Values)
+                {
+                    if (isPublic)
+                    {
+                        // Ensure public endpoints are documented without API key requirements
+                        operation.Security = new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+                    }
+                    else
+                    {
+                        operation.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+                        operation.Security.Add(requirement);
+                    }
+                }
+            }
+        }
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
 
