@@ -73,7 +73,29 @@ builder.Services.AddHealthChecks()
     .AddCheck<PostgreSqlHealthCheck>("postgresql")
     .AddCheck<OpenAiHealthCheck>("openai");
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new Microsoft.OpenApi.OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, Microsoft.OpenApi.IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes["ApiKey"] = new Microsoft.OpenApi.OpenApiSecurityScheme
+        {
+            Type = Microsoft.OpenApi.SecuritySchemeType.ApiKey,
+            In = Microsoft.OpenApi.ParameterLocation.Header,
+            Name = "X-Api-Key",
+            Description = "Chave de API para autenticação. Obtenha sua chave em POST /api/v1/auth/keys."
+        };
+
+        document.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+        var schemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null);
+        var requirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
+        requirement[schemeRef] = new List<string>();
+        document.Security.Add(requirement);
+
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
