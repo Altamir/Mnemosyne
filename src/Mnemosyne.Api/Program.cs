@@ -88,12 +88,42 @@ builder.Services.AddOpenApi(options =>
             Description = "Chave de API para autenticação. Obtenha sua chave em POST /api/v1/auth/keys."
         };
 
-        document.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
-        var schemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null);
-        var requirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
-        requirement[schemeRef] = new List<string>();
-        document.Security.Add(requirement);
+        // Apply security requirements per operation instead of globally,
+        // so that public routes like /api/v1/auth/* and /health* remain unauthenticated.
+        if (document.Paths != null)
+        {
+            var schemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null);
+            var requirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
+            requirement[schemeRef] = new List<string>();
 
+            foreach (var path in document.Paths)
+            {
+                var pathTemplate = path.Key ?? string.Empty;
+                var isPublic =
+                    pathTemplate.StartsWith("/api/v1/auth", StringComparison.OrdinalIgnoreCase) ||
+                    pathTemplate.StartsWith("/health", StringComparison.OrdinalIgnoreCase);
+
+                var pathItem = path.Value;
+                if (pathItem?.Operations == null)
+                {
+                    continue;
+                }
+
+                foreach (var operation in pathItem.Operations.Values)
+                {
+                    if (isPublic)
+                    {
+                        // Ensure public endpoints are documented without API key requirements
+                        operation.Security = new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+                    }
+                    else
+                    {
+                        operation.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+                        operation.Security.Add(requirement);
+                    }
+                }
+            }
+        }
         return Task.CompletedTask;
     });
 });
