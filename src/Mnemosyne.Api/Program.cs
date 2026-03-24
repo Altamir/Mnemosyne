@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Mnemosyne.Application.Features.Auth.CreateApiKey;
 using Mnemosyne.Application.Features.Auth.ValidateApiKey;
 using Mnemosyne.Application.Features.Compress.CompressContext;
 using Mnemosyne.Application.Features.Index.GetIndexStatus;
@@ -31,7 +32,8 @@ var connectionString = builder.Configuration.GetConnectionString("MnemosyneDb")
     ?? throw new InvalidOperationException("Connection string 'MnemosyneDb' not found.");
 
 builder.Services.AddDbContext<MnemosyneDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+        npgsqlOptions.UseVector()));
 
 builder.Services.AddScoped<IMemoryRepository, MemoryRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -40,6 +42,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<CreateMemoryHandler>();
 builder.Services.AddScoped<SearchMemoryHandler>();
 builder.Services.AddScoped<ValidateApiKeyHandler>();
+builder.Services.AddScoped<CreateApiKeyHandler>();
 builder.Services.AddScoped<CreateProjectHandler>();
 builder.Services.AddScoped<GetProjectHandler>();
 builder.Services.AddScoped<ListProjectsHandler>();
@@ -135,8 +138,20 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+// Apply pending migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<MnemosyneDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 app.MapOpenApi();
-app.MapScalarApiReference();
+app.MapScalarApiReference(options => options
+    .AddPreferredSecuritySchemes("ApiKey")
+    .AddApiKeyAuthentication("ApiKey", apiKey =>
+    {
+        apiKey.Value = "bjJhMHfEiIOQ4R4GYGbMZ03F1n5j-2RGG5cfLEZkEDg";
+    }));
 
 app.UseHttpsRedirection();
 
