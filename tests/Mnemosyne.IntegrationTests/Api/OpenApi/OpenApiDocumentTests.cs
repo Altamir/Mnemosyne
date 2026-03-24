@@ -73,7 +73,7 @@ public class OpenApiDocumentTests : IClassFixture<OpenApiDocumentTests.OpenApiWe
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var json = await response.Content.ReadAsStringAsync();
-        var doc = JsonDocument.Parse(json);
+        using var doc = JsonDocument.Parse(json);
 
         var security = doc.RootElement.GetProperty("security");
         Assert.True(security.EnumerateArray().Any());
