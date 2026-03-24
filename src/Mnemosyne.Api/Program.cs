@@ -90,6 +90,11 @@ builder.Services.AddOpenApi(options =>
 
         // Apply security requirements per operation instead of globally,
         // so that public routes like /api/v1/auth/* and /health* remain unauthenticated.
+        document.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+        var globalRequirement = new Microsoft.OpenApi.OpenApiSecurityRequirement();
+        globalRequirement[new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null)] = new List<string>();
+        document.Security.Add(globalRequirement);
+
         if (document.Paths != null)
         {
             var schemeRef = new Microsoft.OpenApi.OpenApiSecuritySchemeReference("ApiKey", document, null);
