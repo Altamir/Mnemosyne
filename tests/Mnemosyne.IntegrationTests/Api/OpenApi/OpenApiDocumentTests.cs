@@ -79,6 +79,32 @@ public class OpenApiDocumentTests : IClassFixture<OpenApiDocumentTests.OpenApiWe
         Assert.True(security.EnumerateArray().Any());
     }
 
+    [Fact(DisplayName = "Documento OpenAPI deve retornar 401 sem API key")]
+    [Trait("Layer", "Integration - OpenAPI")]
+    public async Task OpenApiDocument_WithoutApiKey_Returns401()
+    {
+        using var unauthenticatedClient = _factory.CreateClient();
+
+        // Act
+        var response = await unauthenticatedClient.GetAsync("/openapi/v1.json");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "Scalar UI deve retornar 401 sem API key")]
+    [Trait("Layer", "Integration - OpenAPI")]
+    public async Task ScalarUi_WithoutApiKey_Returns401()
+    {
+        using var unauthenticatedClient = _factory.CreateClient();
+
+        // Act
+        var response = await unauthenticatedClient.GetAsync("/scalar/v1");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
     public class OpenApiWebAppFactory : WebApplicationFactory<Program>
     {
         public const string ApiKey = "test-api-key-openapi";
