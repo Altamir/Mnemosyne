@@ -22,10 +22,11 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile
     container_name: mnemosyne-api
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: "http://+:8080"
       ConnectionStrings__MnemosyneDb: Host=postgres;Port=5432;Database=${POSTGRES_DB:-mnemosyne};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:

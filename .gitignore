@@ -64,3 +64,6 @@ nunit-*.xml
 .env.production
 .env.staging
 !.env.example
+
+# Publish directory
+publish/
