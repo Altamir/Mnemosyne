@@ -1,17 +1,46 @@
-version: '3.8'
-
 services:
   postgres:
     image: pgvector/pgvector:0.8.2-pg18-trixie
     container_name: mnemosyne-postgres
     environment:
-      POSTGRES_DB: mnemosyne
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-mnemosyne}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - mnemosyne-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mnemosyne}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: mnemosyne-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__MnemosyneDb: Host=postgres;Port=5432;Database=${POSTGRES_DB:-mnemosyne};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "5050:8080"
+      - "5051:8081"
+    networks:
+      - mnemosyne-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  mnemosyne-network:
+    driver: bridge
 
 volumes:
   postgres_data:

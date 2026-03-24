@@ -1,0 +1,25 @@
+# Runtime stage only - using pre-built self-contained binaries
+# Build locally first with: dotnet publish src/Mnemosyne.Api/Mnemosyne.Api.csproj -c Release -o ./publish --self-contained -r linux-arm64
+FROM debian:bookworm-slim AS runtime
+WORKDIR /app
+
+# Install curl for healthcheck and ICU for .NET globalization
+RUN apt-get update && apt-get install -y curl ca-certificates libicu72 && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -s /bin/sh appuser
+
+# Copy pre-published files
+COPY ./publish .
+
+# Change ownership to non-root user
+RUN chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8080
+EXPOSE 8081
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health/live || exit 1
+
+ENTRYPOINT ["./Mnemosyne.Api"]
